@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>I Love You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page page-2">
+  <div class="frame">
+    <main class="main love-main">
+      <div class="confetti" aria-hidden="true"></div>
+
+      <div class="love-card">
+        <div class="heart-beat" aria-hidden="true">
+          <svg viewBox="0 0 32 29" class="svg-heart" role="img" aria-hidden="true">
+            <path d="M23.6 0c-2.7 0-5 1.6-6.1 3.9C16.4 1.6 14.1 0 11.4 0 5.1 0 .9 4.6.9 10.5c0 6.8 6.9 11.5 12.8 17.4 1 .9 2.7.9 3.7 0C24.9 22 31.8 17.3 31.8 10.5 31.8 4.6 27.6 0 23.6 0z"/>
+          </svg>
+        </div>
+
+        <h2 class="love-title">I love youuuuuu</h2>
+        <p class="love-text">Today, tomorrow, forever — you're my heart's home.</p>
+
+        <div class="actions action-choices" id="choiceArea" aria-label="Make a choice">
+          <button class="btn btn-light" id="backBtn" aria-label="Show couple photo in heart">← Back</button>
+
+          <div class="yesno-wrap" id="yesno">
+            <button class="btn btn-yes" id="yesBtn">Yes 💖</button>
+            <button class="btn btn-no" id="noBtn">No 😅</button>
+          </div>
+        </div>
+
+        <div class="secret" id="secret" aria-hidden="true">
+          <p class="secret-text">You make every day brighter. Will you be mine?</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- modal: couple heart-shaped photo -->
+  <div class="modal" id="photoModal" role="dialog" aria-hidden="true" aria-label="Couple photo">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content" role="document">
+      <!-- inline SVG clipPath (heart) used to mask the image -->
+      <svg width="1" height="1" viewBox="0 0 100 100" class="hide">
+        <defs>
+          <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+            <!-- normalized path for a heart -->
+            <path d="M0.5 0.92 C0.5 0.92 0.05 0.72 0.05 0.44 C0.05 0.22 0.22 0.05 0.5 0.18 C0.78 0.05 0.95 0.22 0.95 0.44 C0.95 0.72 0.5 0.92 0.5 0.92 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
+      <div class="photo-wrap">
+        <!-- Replace the href below with your own image file name (couple.jpg) or a direct URL -->
+        <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" class="heart-photo">
+          <defs>
+            <clipPath id="heartClip2" clipPathUnits="objectBoundingBox">
+              <path d="M0.5 0.92 C0.5 0.92 0.05 0.72 0.05 0.44 C0.05 0.22 0.22 0.05 0.5 0.18 C0.78 0.05 0.95 0.22 0.95 0.44 C0.95 0.72 0.5 0.92 0.5 0.92 Z" />
+            </clipPath>
+          </defs>
+
+          <!-- default placeholder image; put 'couple.jpg' in same folder to replace -->
+          <image clip-path="url(#heartClip2)" href="fuchii" x="100" y="200" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"></image>
+        <image clip-path="url(#heartClip2)"
+       href="fuchii.png"
+       x="0" y="0" width="100%" height="100%"
+       preserveAspectRatio="xMidYMid slice"></image> </svg>
+
+        <div class="modal-actions">
+          <button class="btn btn-outline" id="closeModal">Close</button>
+          <button class="btn btn-light" id="homeFromModal">Back to Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- yes result overlay (heart + message) -->
+  <div class="kiss-overlay" id="kissOverlay" aria-hidden="true" role="status" aria-live="polite">
+    <div class="kiss-card" id="kissCard">
+      <svg class="big-heart" viewBox="0 0 32 29" aria-hidden="true">
+        <path d="M23.6 0c-2.7 0-5 1.6-6.1 3.9C16.4 1.6 14.1 0 11.4 0 5.1 0 .9 4.6.9 10.5c0 6.8 6.9 11.5 12.8 17.4 1 .9 2.7.9 3.7 0C24.9 22 31.8 17.3 31.8 10.5 31.8 4.6 27.6 0 23.6 0z"/>
+      </svg>
+      <p class="kiss-text">Will you be mine?</p>
+      <button class="btn btn-light" id="closeKiss">Aww ❤️</button>
+    </div>
+  </div>
+
+  <script>
+    // Modal handling for heart-shaped photo (Back)
+    const backBtn = document.getElementById('backBtn');
+    const photoModal = document.getElementById('photoModal');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const closeModal = document.getElementById('closeModal');
+    const homeFromModal = document.getElementById('homeFromModal');
+
+    backBtn.addEventListener('click', () => {
+      photoModal.setAttribute('aria-hidden', 'false');
+      photoModal.classList.add('open');
+      // prevent scrolling while modal open
+      document.body.style.overflow = 'hidden';
+    });
+    function closePhotoModal() {
+      photoModal.setAttribute('aria-hidden', 'true');
+      photoModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    closeModal.addEventListener('click', closePhotoModal);
+    modalBackdrop.addEventListener('click', closePhotoModal);
+    homeFromModal.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    // Evasive "No" button behavior
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const yesno = document.getElementById('yesno');
+
+    // position no button absolutely within yesno container
+    noBtn.style.position = 'absolute';
+    yesBtn.style.position = 'relative';
+    yesno.style.position = 'relative';
+    // start with noBtn on right
+    noBtn.style.top = '0%';
+    noBtn.style.left = '58%';
+
+    function moveNoAway(clientX, clientY) {
+      const rect = noBtn.getBoundingClientRect();
+      const btnCenterX = rect.left + rect.width / 2;
+      const btnCenterY = rect.top + rect.height / 2;
+      const dx = clientX - btnCenterX;
+      const dy = clientY - btnCenterY;
+      const dist = Math.hypot(dx, dy);
+      const threshold = 120; // pixels - how close before it runs
+
+      if (dist < threshold) {
+        // move away by computing new position inside container
+        const parentRect = yesno.getBoundingClientRect();
+        const btnW = rect.width;
+        const btnH = rect.height;
+
+        // candidate new positions until sufficiently far from pointer
+        for (let i = 0; i < 12; i++) {
+          const percentX = Math.random() * 80 + 5; // avoid edges (5% - 85%)
+          const percentY = Math.random() * 60 + 10; // 10% - 70%
+          const newLeft = parentRect.left + parentRect.width * (percentX / 100);
+          const newTop = parentRect.top + parentRect.height * (percentY / 100);
+ 
+          const ndx = clientX - newLeft;
+          const ndy = clientY - newTop;
+          if (Math.hypot(ndx, ndy) > threshold * 1.2) {
+            // apply
+            noBtn.style.left = percentX + '%';
+            noBtn.style.top = percentY + '%';
+            return;
+          }
+        }
+        // fallback: move to opposite side
+        const oppX = Math.min(Math.max((btnCenterX < window.innerWidth / 2) ? 80 : 10, 5), 90);
+        noBtn.style.left = oppX + '%';
+        noBtn.style.top = '20%';
+      }
+    }
+
+    // mouse proximity: on mousemove in document
+    document.addEventListener('mousemove', (e) => {
+      moveNoAway(e.clientX, e.clientY);
+    });
+
+    // also move on touchstart (mobile)
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) {
+        moveNoAway(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    });
+
+    // On focus or attempted click, move away
+    noBtn.addEventListener('mouseenter', (e) => {
+      moveNoAway(e.clientX, e.clientY);
+    });
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      moveNoAway(e.clientX || window.innerWidth/2, e.clientY || window.innerHeight/2);
+    });
+
+    // Yes button: show heart + message overlay
+    const kissOverlay = document.getElementById('kissOverlay');
+    const kissCard = document.getElementById('kissCard');
+    const closeKiss = document.getElementById('closeKiss');
+
+    yesBtn.addEventListener('click', () => {
+      kissOverlay.setAttribute('aria-hidden', 'false');
+      kissOverlay.classList.add('open');
+      // small heart beat animation is handled in CSS
+      // optional: add a quick sparkle / small sound later
+    });
+    function closeKissOverlay() {
+      kissOverlay.setAttribute('aria-hidden', 'true');
+      kissOverlay.classList.remove('open');
+    }
+    closeKiss.addEventListener('click', closeKissOverlay);
+    kissOverlay.addEventListener('click', (e) => {
+      if (e.target === kissOverlay) closeKissOverlay();
+    });
+  </script>
+</body>
+</html>

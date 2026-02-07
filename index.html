@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine — Surprise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page page-1">
+  <div class="frame">
+    <header class="header">
+      <h1 class="title">Happy Rose day fuchii </h1>
+      <p class="subtitle">A small surprise awaits — turn the page ❤️</p>
+    </header>
+
+    <main class="main">
+      <div class="art">
+        <div class="heart heart-big" aria-hidden="true"></div>
+        <div class="heart heart-small" aria-hidden="true"></div>
+
+        <div class="petal p1"></div>
+        <div class="petal p2"></div>
+        <div class="petal p3"></div>
+      </div>
+
+      <button class="btn" id="nextBtn" aria-label="Go to next page">Next →</button>
+    </main>
+
+    <footer class="footer">
+      <p>ᴹᴿ彡ᴍᴜᴋᴇꜱʜ乂ʏᴛ <span class="hrt">♥</span> for someone special</p>
+    </footer>
+  </div>
+
+  <!-- Floating hearts (visible during transition) -->
+  <div class="floating-hearts" aria-hidden="true">
+    <span class="h"></span><span class="h"></span><span class="h"></span><span class="h"></span><span class="h"></span>
+    <span class="h"></span><span class="h"></span><span class="h"></span>
+  </div>
+
+  <!-- Lightning overlay used during transition -->
+  <div class="lightning-overlay" id="lightningOverlay" aria-hidden="true"></div>
+
+  <script>
+    // Thunder + lightning effect (Web Audio API + CSS flash)
+    function playThunder(audioCtx) {
+      if (!audioCtx) return Promise.resolve();
+      const now = audioCtx.currentTime;
+
+      // Noise buffer for rumble
+      const bufferSize = audioCtx.sampleRate * 1.1;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize) * (0.6 + Math.random() * 0.4);
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = noiseBuffer;
+
+      const lp = audioCtx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(1200, now);
+      lp.frequency.exponentialRampToValueAtTime(120, now + 0.9);
+
+      const ng = audioCtx.createGain();
+      ng.gain.setValueAtTime(0, now);
+      ng.gain.linearRampToValueAtTime(0.45, now + 0.05);
+      ng.gain.exponentialRampToValueAtTime(0.06, now + 0.8);
+      ng.gain.linearRampToValueAtTime(0, now + 1.3);
+
+      noise.connect(lp).connect(ng).connect(audioCtx.destination);
+      noise.start(now);
+      noise.stop(now + 1.35);
+
+      // Bright crack for lightning snap
+      const osc = audioCtx.createOscillator();
+      const og = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1500, now + 0.06);
+      osc.frequency.exponentialRampToValueAtTime(450, now + 0.16);
+
+      og.gain.setValueAtTime(0.0001, now);
+      og.gain.exponentialRampToValueAtTime(0.12, now + 0.07);
+      og.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+      const bp = audioCtx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.setValueAtTime(1200, now + 0.06);
+      bp.Q.setValueAtTime(6, now + 0.06);
+
+      osc.connect(bp).connect(og).connect(audioCtx.destination);
+      osc.start(now + 0.06);
+      osc.stop(now + 0.25);
+
+      return Promise.resolve();
+    }
+
+    (function () {
+      const nextBtn = document.getElementById('nextBtn');
+      const lightning = document.getElementById('lightningOverlay');
+      const floating = document.querySelector('.floating-hearts');
+      let audioCtx = null;
+
+      function ensureAudio() {
+        if (!audioCtx) {
+          try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+          catch (e) { audioCtx = null; }
+        }
+        return audioCtx;
+      }
+
+      nextBtn.addEventListener('click', function () {
+        nextBtn.disabled = true;
+        // show transition visual hearts
+        document.body.classList.add('to-love');
+
+        // restart lightning flash animation
+        lightning.classList.remove('strike');
+        void lightning.offsetWidth;
+        lightning.classList.add('strike');
+        lightning.setAttribute('aria-hidden', 'false');
+
+        // play thunder if possible
+        const ctx = ensureAudio();
+        if (ctx) {
+          if (ctx.state === 'suspended' && typeof ctx.resume === 'function') {
+            ctx.resume().then(() => playThunder(ctx));
+          } else {
+            playThunder(ctx);
+          }
+        }
+
+        // navigate after short pause to appreciate thunder+flash
+        setTimeout(() => {
+          window.location.href = 'love.html';
+        }, 1100);
+      });
+    })();
+  </script>
+  <!-- add this next to the modal or near the end of <body> -->
+<audio id="loveSong" src="rupak.mp3" preload="auto" loop></audio>
+</body>
+</html>
